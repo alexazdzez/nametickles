@@ -4,6 +4,7 @@ import 'package:nametickles/auth.dart';
 import 'package:nametickles/pages/add_blague_page.dart';
 import 'package:nametickles/pages/blague_page.dart';
 import 'package:nametickles/pages/account.dart';
+import 'package:nametickles/pages/gemmes_page.dart';
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -44,13 +45,13 @@ class _MyAppState extends State<MyApp> {
   Future<void> _checkUserGems() async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid != null) {
-      final userDoc = await FirebaseFirestore.instance.collection('Utilisateur').doc(uid).get();
+      final userDoc = await FirebaseFirestore.instance.collection('Utilisateurs').doc(uid).get();
       if (userDoc.exists) {
         setState(() {
           _gemmes = userDoc['gemmes'] ?? 0; // Chargement des gemmes de l'utilisateur
         });
       } else {
-        await FirebaseFirestore.instance.collection('Utilisateur').doc(uid).set({'gemmes': 10}); // Création du document
+        await FirebaseFirestore.instance.collection('Utilisateurs').doc(uid).set({'gemmes': 10}); // Création du document
         setState(() {
           _gemmes = 10; // Attribuer 10 gemmes par défaut
         });
@@ -61,6 +62,7 @@ class _MyAppState extends State<MyApp> {
   void setCurrentIndex(int index) {
     setState(() {
       _currentIndex = index;
+      _checkUserGems();
     });
   }
 
@@ -73,21 +75,24 @@ class _MyAppState extends State<MyApp> {
           title: [
             const Text("Blagues"),
             const Text("Ajoutes-en une"),
-            const Text("Mon compte")
+            const Text("Mon compte"),
+            const Text("Mes gemmes")
           ][_currentIndex],
           backgroundColor: Colors.lightBlue,
           actions: [
             if (_gemmes != null) // Affichage des gemmes en haut à droite
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Center(child: Text('Gemmes: $_gemmes')),
-              ),
+              if (_currentIndex != 3)
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Center(child: Text('Gemmes: $_gemmes', style: TextStyle(fontSize: 17),)),
+                ),
           ],
         ),
         body: [
           const EventPage(),
           const AddEventPage(),
           const MyAccount(),
+          const GemmePage()
         ][_currentIndex],
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _currentIndex,
@@ -110,6 +115,10 @@ class _MyAppState extends State<MyApp> {
                 icon: Icon(Icons.person),
                 label: "Mon compte"
             ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.diamond),
+              label: "Mes gemmes"
+            )
           ],
         ),
       ),
