@@ -4,7 +4,6 @@ import 'package:nametickles/auth.dart';
 import 'package:nametickles/pages/add_blague_page.dart';
 import 'package:nametickles/pages/blague_page.dart';
 import 'package:nametickles/pages/account.dart';
-import 'package:nametickles/pages/gemmes_page.dart';
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -76,15 +75,14 @@ class _MyAppState extends State<MyApp> {
             const Text("Blagues"),
             const Text("Ajoutes-en une"),
             const Text("Mon compte"),
-            const Text("Mes gemmes")
           ][_currentIndex],
           backgroundColor: Colors.lightBlue,
           actions: [
             if (_gemmes != null) // Affichage des gemmes en haut à droite
-              if (_currentIndex != 3)
+              if (_currentIndex != 2)
                 Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: Center(child: Text('Gemmes: $_gemmes', style: TextStyle(fontSize: 17),)),
+                  child: Center(child: Text('Diamants: $_gemmes', style: TextStyle(fontSize: 17),)),
                 ),
           ],
         ),
@@ -92,7 +90,6 @@ class _MyAppState extends State<MyApp> {
           const EventPage(),
           const AddEventPage(),
           const MyAccount(),
-          const GemmePage()
         ][_currentIndex],
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _currentIndex,
@@ -115,10 +112,6 @@ class _MyAppState extends State<MyApp> {
                 icon: Icon(Icons.person),
                 label: "Mon compte"
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.diamond),
-              label: "Mes gemmes"
-            )
           ],
         ),
       ),
