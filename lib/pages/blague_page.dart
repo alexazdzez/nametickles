@@ -113,8 +113,8 @@ class _EventPageState extends State<EventPage> {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Vous avez déjà mis un like"),
-          content: SingleChildScrollView(
+          title: const Text("Vous avez déjà mis un like"),
+          content: const SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
                 Text("Relike : 12 gemmes"),

@@ -4,13 +4,13 @@ import 'package:nametickles/auth.dart';
 import 'package:nametickles/pages/add_blague_page.dart';
 import 'package:nametickles/pages/blague_page.dart';
 import 'package:nametickles/pages/account.dart';
+import 'package:nametickles/update_checker.dart';
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  //MobileAds.instance.initialize();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -65,8 +65,15 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  final UpdateChecker updateChecker = UpdateChecker(
+    githubUsername: 'alexazdzez',
+    repoName: 'nametickles',
+    currentVersion: '4.0.0',
+  );
+
   @override
   Widget build(BuildContext context) {
+    updateChecker.checkForUpdates(context);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
@@ -77,14 +84,6 @@ class _MyAppState extends State<MyApp> {
             const Text("Mon compte"),
           ][_currentIndex],
           backgroundColor: Colors.lightBlue,
-          actions: [
-            if (_gemmes != null) // Affichage des gemmes en haut à droite
-              if (_currentIndex != 2)
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Center(child: Text('Diamants: $_gemmes', style: TextStyle(fontSize: 17),)),
-                ),
-          ],
         ),
         body: [
           const EventPage(),
