@@ -170,17 +170,6 @@ class _EventPageState extends State<EventPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        actions: [
-          ElevatedButton.icon(
-            icon: const Icon(Icons.refresh_outlined),
-            onPressed: () {
-              setState(() {});
-            },
-            label: const Text("Actualiser"),
-          )
-        ],
-      ),
       body: Center(
         child: FutureBuilder<List<Event>>(
           future: loadData(),
