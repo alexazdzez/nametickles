@@ -52,6 +52,7 @@ class _EventPageState extends State<EventPage> {
             child: ListBody(
               children: <Widget>[
                 Text("likes: ${eventData.like.length}"),
+                Text("Créateur: ${eventData.createur}")
               ],
             ),
           ),
@@ -160,8 +161,11 @@ class _EventPageState extends State<EventPage> {
     QuerySnapshot querySnapshot = await firestore.collection('Events').orderBy('like', descending: true).get();
 
     for (QueryDocumentSnapshot doc in querySnapshot.docs) {
+      final uid = FirebaseAuth.instance.currentUser?.uid;
+      final createur = await FirebaseFirestore.instance.collection('Utilisateurs').doc(uid).get('pseudo' as GetOptions?);
       Map<String, dynamic> dataWithId = doc.data() as Map<String, dynamic>;
       dataWithId['id'] = doc.id;
+      dataWithId['createur'] = createur;
       events.add(Event.fromData(dataWithId));
     }
     return events;

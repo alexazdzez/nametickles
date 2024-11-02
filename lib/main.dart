@@ -34,11 +34,48 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   int _currentIndex = 0;
   int? _gemmes; // Ajout de la variable pour stocker les gemmes
+  final pseudoController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _checkUserGems(); // Vérification des gemmes lors de l'initialisation
+  }
+
+  Future<void> showPseudo() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Bienvenue"),
+          content: const SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text("Choisissez un pseudo"),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            const SizedBox(width: 20),
+            TextFormField(
+              decoration: const InputDecoration(
+                labelText: "Pseudo",
+                border: OutlineInputBorder(),
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return "Vous devez compléter ce champ";
+                }
+                return null;
+              },
+              controller: pseudoController,
+              maxLength: 10,
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> _checkUserGems() async {
@@ -50,7 +87,11 @@ class _MyAppState extends State<MyApp> {
           _gemmes = userDoc['gemmes'] ?? 0; // Chargement des gemmes de l'utilisateur
         });
       } else {
-        await FirebaseFirestore.instance.collection('Utilisateurs').doc(uid).set({'gemmes': 10}); // Création du document
+        showPseudo();
+        await FirebaseFirestore.instance.collection('Utilisateurs').doc(uid).set(
+            {'gemmes': 10},
+            {'pseudo': pseudoController.text} as SetOptions?
+        ); // Création du document
         setState(() {
           _gemmes = 10; // Attribuer 10 gemmes par défaut
         });
