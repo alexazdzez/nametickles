@@ -71,9 +71,10 @@ class _MyAccountState extends State<MyAccount> {
   Future<void> loadData() async {
     final FirebaseFirestore firestore = FirebaseFirestore.instance;
     final uid = FirebaseAuth.instance.currentUser?.uid;
+    final userDoc = await FirebaseFirestore.instance.collection('Utilisateurs').doc(uid).get();
     QuerySnapshot querySnapshot = await firestore
         .collection('Events')
-        .where('createur', isEqualTo: uid)
+        .where('createur', isEqualTo: userDoc['pseudo'])
         .get();
 
     List<Event> events = [];
