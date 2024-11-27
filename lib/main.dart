@@ -70,10 +70,11 @@ class _MyAppState extends State<MyApp> {
     repoName: 'nametickles',
     currentVersion: '4.0.0',
   );
+  final navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context) {
-    updateChecker.checkForUpdates(context);
+    updateChecker.checkForUpdates(navigatorKey);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
@@ -114,6 +115,7 @@ class _MyAppState extends State<MyApp> {
           ],
         ),
       ),
+        navigatorKey: navigatorKey,
     );
   }
 }
