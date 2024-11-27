@@ -41,8 +41,8 @@ class UpdateChecker {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text("Mise à jour disponible $latestVersion"),
-        content: Text("Version $currentVersion disponible. Voulez-vous télécharger la mise à jour ?"),
+        title: Text("Mise à jour disponible"),
+        content: Text("Version $latestVersion disponible. Voulez-vous télécharger la mise à jour ?"),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
