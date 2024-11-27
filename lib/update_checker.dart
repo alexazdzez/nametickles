@@ -51,7 +51,7 @@ class UpdateChecker {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              _downloadAndInstallUpdate();
+              _downloadAndInstallUpdate(latestVersion);
             },
             child: Text("Mettre à jour"),
           ),
@@ -60,8 +60,8 @@ class UpdateChecker {
     );
   }
 
-  Future<void> _downloadAndInstallUpdate() async {
-    final apkUrl = 'https://github.com/$githubUsername/$repoName/releases/download/latest/app-release.apk';
+  Future<void> _downloadAndInstallUpdate(String latestVersion) async {
+    final apkUrl = 'https://github.com/$githubUsername/$repoName/releases/download/V$latestVersion/app-release.apk';
     final response = await http.get(Uri.parse(apkUrl));
 
     if (response.statusCode == 200) {
@@ -73,10 +73,16 @@ class UpdateChecker {
 
       // Lancement de l'installation (uniquement possible sur Android)
       if (Platform.isAndroid) {
+        print("oh");
         await Process.run('pm', ['install', '-r', filePath]);
+        print("ha");
+      }
+      else{
+        print("ah");
       }
     } else {
-      print("Erreur lors du téléchargement de l'APK");
+      print(apkUrl);
+      print("Erreur lors du téléchargement de l'APK ${response.statusCode}");
     }
   }
 }

@@ -68,7 +68,7 @@ class _MyAppState extends State<MyApp> {
   final UpdateChecker updateChecker = UpdateChecker(
     githubUsername: 'alexazdzez',
     repoName: 'nametickles',
-    currentVersion: '4.1.0',
+    currentVersion: '4.2.0',
   );
   final navigatorKey = GlobalKey<NavigatorState>();
 
