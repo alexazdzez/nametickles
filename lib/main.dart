@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:nametickles/auth.dart';
 import 'package:nametickles/pages/add_blague_page.dart';
 import 'package:nametickles/pages/blague_page.dart';
@@ -14,9 +15,8 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
+  await AuthServices().signinAnonymous(); // Assure que l'utilisateur est connecté
   runApp(const MyApp());
-  connect();
 }
 
 void connect() async {
@@ -33,12 +33,21 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   int _currentIndex = 0;
+  // ignore: unused_field
   int? _gemmes; // Ajout de la variable pour stocker les gemmes
+  final UpdateChecker updateChecker = UpdateChecker(
+    githubUsername: 'alexazdzez',
+    repoName: 'nametickles',
+    currentVersion: '4.0.0',
+  );
 
   @override
   void initState() {
     super.initState();
     _checkUserGems(); // Vérification des gemmes lors de l'initialisation
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      updateChecker.checkForUpdates(navigatorKey);
+    });
   }
 
   Future<void> _checkUserGems() async {
@@ -64,16 +73,10 @@ class _MyAppState extends State<MyApp> {
       _checkUserGems();
     });
   }
-
-  final UpdateChecker updateChecker = UpdateChecker(
-    githubUsername: 'alexazdzez',
-    repoName: 'nametickles',
-    currentVersion: '4.0.0',
-  );
+  final navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context) {
-    updateChecker.checkForUpdates(context);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
@@ -114,6 +117,8 @@ class _MyAppState extends State<MyApp> {
           ],
         ),
       ),
+      navigatorKey: navigatorKey,
     );
   }
 }
+

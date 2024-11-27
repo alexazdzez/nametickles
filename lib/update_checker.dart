@@ -11,8 +11,8 @@ class UpdateChecker {
 
   UpdateChecker({required this.githubUsername, required this.repoName, required this.currentVersion});
 
-  Future<void> checkForUpdates(BuildContext context) async {
-    final url = Uri.parse('https://raw.githubusercontent.com/$githubUsername/$repoName/main/version.json');
+  Future<void> checkForUpdates(GlobalKey<NavigatorState> navigatorKey) async {
+    final url = Uri.parse('https://raw.githubusercontent.com/$githubUsername/$repoName/master/version.json');
     try {
       final reponse = await http.get(url);
       if (reponse.statusCode == 200) {
@@ -21,22 +21,28 @@ class UpdateChecker {
 
         if (latestVersion != currentVersion) {
           // Nouvelle version disponible
-          _showUpdateDialog(context, latestVersion);
+          _showUpdateDialog(navigatorKey, latestVersion, currentVersion);
         }
       } else {
-        print("Erreur lors de la récupération de la version distante: url = $url, reponse = $reponse");
+        print("Erreur lors de la récupération de la version distante: url = $url, reponse = ${reponse.statusCode}");
       }
     } catch (e) {
       print("Erreur de mise à jour: $e");
     }
   }
 
-  void _showUpdateDialog(BuildContext context, String latestVersion) {
+  void _showUpdateDialog(GlobalKey<NavigatorState> navigatorKey, String latestVersion, String currentVersion) {
+    final context = navigatorKey.currentContext;
+    if (context == null) {
+      print("Impossible d'afficher le dialogue de mise à jour : le contexte est null.");
+      return;
+    }
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text("Mise à jour disponible"),
-        content: Text("Version $latestVersion disponible. Voulez-vous télécharger la mise à jour ?"),
+        title: Text("Mise à jour disponible $latestVersion"),
+        content: Text("Version $currentVersion disponible. Voulez-vous télécharger la mise à jour ?"),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
