@@ -5,6 +5,7 @@ class Event {
   final List<String> like;
   final String user;
   final List<String> suppression;
+  final String createur;
 
   Event({
     required this.id,
@@ -13,6 +14,7 @@ class Event {
     required this.like,
     required this.user,
     required this.suppression,
+    required this.createur
   });
 
   factory Event.fromData(Map<String, dynamic> data) {
@@ -23,6 +25,7 @@ class Event {
       like: List<String>.from(data['like'] ?? []),
       user: data['createur'] ?? '',
       suppression: List<String>.from(data['suppression'] ?? []),
+      createur: data['createur'],
     );
   }
 }
