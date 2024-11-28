@@ -162,7 +162,9 @@ class _EventPageState extends State<EventPage> {
 
     for (QueryDocumentSnapshot doc in querySnapshot.docs) {
       final uid = FirebaseAuth.instance.currentUser?.uid;
-      final createur = await FirebaseFirestore.instance.collection('Utilisateurs').doc(uid).get('pseudo' as GetOptions?);
+      final snapshot = await FirebaseFirestore.instance.collection('Utilisateurs').doc(uid).get();
+      final data = snapshot.data(); // Récupère toutes les données sous forme de Map<String, dynamic>
+      final createur = data?['pseudo'];
       Map<String, dynamic> dataWithId = doc.data() as Map<String, dynamic>;
       dataWithId['id'] = doc.id;
       dataWithId['createur'] = createur;

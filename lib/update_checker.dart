@@ -73,9 +73,9 @@ class UpdateChecker {
 
       // Lancement de l'installation (uniquement possible sur Android)
       if (Platform.isAndroid) {
-        print("oh");
         await Process.run('pm', ['install', '-r', filePath]);
-        print("ha");
+        print("terminé");
+        exit(0);
       }
       else{
         print("ah");
