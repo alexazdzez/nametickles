@@ -39,6 +39,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     _checkUserGems(); // Vérification des gemmes lors de l'initialisation
+    updateChecker.checkForUpdates(navigatorKey);
   }
 
   Future<void> _checkUserGems() async {
@@ -68,13 +69,12 @@ class _MyAppState extends State<MyApp> {
   final UpdateChecker updateChecker = UpdateChecker(
     githubUsername: 'alexazdzez',
     repoName: 'nametickles',
-    currentVersion: '5.0',
+    currentVersion: '5.1',
   );
   final navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context) {
-    updateChecker.checkForUpdates(navigatorKey);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(

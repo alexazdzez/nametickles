@@ -18,10 +18,15 @@ class UpdateChecker {
       if (reponse.statusCode == 200) {
         final remoteData = json.decode(reponse.body);
         final latestVersion = remoteData['version'];
+        final isSnapshot = remoteData['snapshot'];
 
         if (latestVersion != currentVersion) {
-          // Nouvelle version disponible
-          _showUpdateDialog(navigatorKey, latestVersion, currentVersion);
+          if (isSnapshot) {
+            _showSnapshotDialog(navigatorKey, latestVersion, currentVersion);
+          }
+          else{
+            _showUpdateDialog(navigatorKey, latestVersion, currentVersion);
+          }
         }
       } else {
         print("Erreur lors de la récupération de la version distante: url = $url, reponse = ${reponse.statusCode}");
@@ -54,6 +59,37 @@ class UpdateChecker {
               _downloadAndInstallUpdate(latestVersion);
             },
             child: Text("Mettre à jour"),
+          ),
+        ],
+      ),
+    );
+  }
+  void _showSnapshotDialog(GlobalKey<NavigatorState> navigatorKey, String latestVersion, String currentVersion) {
+    final context = navigatorKey.currentContext;
+    if (context == null) {
+      print("Impossible d'afficher le dialogue de mise à jour : le contexte est null.");
+      return;
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Mise à jour en snapshot"),
+        content: Text(
+            "Version $latestVersion disponible. Voulez-vous télécharger la mise à jour ?\n"
+            "Attention cette version est une beta!"
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text("Non, je veux pas de risque"),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _downloadAndInstallUpdate(latestVersion);
+            },
+            child: Text("Mettre à jour sur une beta"),
           ),
         ],
       ),
