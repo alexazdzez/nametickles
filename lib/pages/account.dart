@@ -5,14 +5,14 @@ import 'package:nametickles/blague_model.dart';
 
 import '../gemmes.dart';
 
-class MyAccount extends StatefulWidget {
-  const MyAccount({super.key});
+class MyAccountPage extends StatefulWidget {
+  const MyAccountPage({super.key});
 
   @override
-  State<MyAccount> createState() => _MyAccountState();
+  State<MyAccountPage> createState() => _MyAccountState();
 }
 
-class _MyAccountState extends State<MyAccount> {
+class _MyAccountState extends State<MyAccountPage> {
   List<Event> _events = [];
   bool _isLoading = true;
   int? _gemmes;

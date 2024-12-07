@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:nametickles/auth.dart';
 import 'package:nametickles/pages/add_blague_page.dart';
+import 'package:nametickles/pages/admin_page.dart';
 import 'package:nametickles/pages/blague_page.dart';
 import 'package:nametickles/pages/account.dart';
 import 'package:nametickles/update_checker.dart';
@@ -33,16 +34,16 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   int _currentIndex = 0;
-  int? _gemmes; // Ajout de la variable pour stocker les gemmes
-  double currentVersion =  5.2;
+  int? _gemmes;
+  bool? _admin; // Peut être null au départ pour attendre Firestore
+  double currentVersion = 5.2;
   late final UpdateChecker updateChecker;
   final navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   void initState() {
     super.initState();
-    _checkUserDoc(); // Vérification des gemmes lors de l'initialisation
-    // Initialisation de UpdateChecker après l'initialisation de l'état
+    _checkUserDoc();
     updateChecker = UpdateChecker(
       githubUsername: 'alexazdzez',
       repoName: 'nametickles',
@@ -54,17 +55,27 @@ class _MyAppState extends State<MyApp> {
   Future<void> _checkUserDoc() async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid != null) {
-      final userDoc = await FirebaseFirestore.instance.collection('Utilisateurs').doc(uid).get();
-      if (userDoc.exists) {
+      final userDoc = FirebaseFirestore.instance.collection('Utilisateurs').doc(uid);
+
+      // Vérification si le document existe et mise à jour des données
+      final snapshot = await userDoc.get();
+      if (snapshot.exists) {
+        final data = snapshot.data()!;
         setState(() {
-          _gemmes = userDoc['gemmes'] ?? 0; // Chargement des gemmes de l'utilisateur
+          _gemmes = data['gemmes'] ?? 10;
+          _admin = data['admin'] ?? false;
         });
-        await FirebaseFirestore.instance.collection('Utilisateurs').doc(uid).update({'version' : currentVersion});
+        await userDoc.update({'version': currentVersion});
       } else {
-        await FirebaseFirestore.instance.collection('Utilisateurs').doc(uid).set({'gemmes': 10}); // Création du document
-        await FirebaseFirestore.instance.collection('Utilisateurs').doc(uid).set({'version': currentVersion});
+        // Création du document utilisateur par défaut
+        await userDoc.set({
+          'gemmes': 10,
+          'admin': false,
+          'version': currentVersion,
+        });
         setState(() {
-          _gemmes = 10; // Attribuer 10 gemmes par défaut
+          _gemmes = 10;
+          _admin = false;
         });
       }
     }
@@ -73,12 +84,21 @@ class _MyAppState extends State<MyApp> {
   void setCurrentIndex(int index) {
     setState(() {
       _currentIndex = index;
-      _checkUserDoc();
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_admin == null) {
+      return const MaterialApp(
+        home: Scaffold(
+          body: Center(
+            child: CircularProgressIndicator(),
+          ),
+        ),
+      );
+    }
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
@@ -87,13 +107,15 @@ class _MyAppState extends State<MyApp> {
             const Text("Blagues"),
             const Text("Ajoutes-en une"),
             const Text("Mon compte"),
+            if (_admin!) const Text("Administration"),
           ][_currentIndex],
           backgroundColor: Colors.lightBlue,
         ),
         body: [
-          const EventPage(),
+          const EventPage(isAdmin: false,),
           const AddEventPage(),
-          const MyAccount(),
+          const MyAccountPage(),
+          if (_admin!) const AdminPage(),
         ][_currentIndex],
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _currentIndex,
@@ -103,23 +125,28 @@ class _MyAppState extends State<MyApp> {
           unselectedItemColor: Colors.black54,
           backgroundColor: Colors.lightBlueAccent,
           elevation: 10,
-          items: const [
-            BottomNavigationBarItem(
-                icon: Icon(Icons.mood),
-                label: "Accueil"
+          items: [
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.mood),
+              label: "Accueil",
             ),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.add),
-                label: "Ajoutes-en une"
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.add),
+              label: "Ajoutes-en une",
             ),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.person),
-                label: "Mon compte"
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.person_outline),
+              label: "Mon compte",
             ),
+            if (_admin!)
+              const BottomNavigationBarItem(
+                icon: Icon(Icons.lock_open),
+                label: "Admin",
+              ),
           ],
         ),
       ),
-        navigatorKey: navigatorKey,
+      navigatorKey: navigatorKey,
     );
   }
 }
