@@ -36,7 +36,7 @@ class _MyAppState extends State<MyApp> {
   int _currentIndex = 0;
   int? _gemmes;
   bool? _admin; // Peut être null au départ pour attendre Firestore
-  double currentVersion = 5.2;
+  double currentVersion = 5.3;
   late final UpdateChecker updateChecker;
   final navigatorKey = GlobalKey<NavigatorState>();
 

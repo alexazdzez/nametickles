@@ -150,7 +150,7 @@ class _EventPageState extends State<EventPage> {
                 }
                 Navigator.of(context).pop();
               },
-              label: const Text("ReLike"),
+              label: const Text("Relike"),
               icon: const Icon(Icons.thumb_up_rounded),
             ),
             if(_isAdmin)ElevatedButton.icon(
