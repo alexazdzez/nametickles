@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'blague_page.dart';
-
 class AdminPage extends StatefulWidget {
   const AdminPage({super.key});
 
@@ -15,30 +13,20 @@ class _AdminPageState extends State<AdminPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: const Text('Gestion des droits admin')),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            const Text('Activer les droits d\'admin',style: TextStyle(fontSize: 15),),
+            const Text('Activer les droits d\'admin', style: TextStyle(fontSize: 15)),
             Switch(
               value: _isAdmin,
               onChanged: (bool value) {
                 setState(() {
                   _isAdmin = value;
                 });
+                // Pas besoin de rediriger, la page d'accueil va automatiquement s'adapter.
               },
-            ),
-            ElevatedButton(
-              onPressed: () {
-                // Passer le booléen à la page Event
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => EventPage(isAdmin: _isAdmin),
-                  ),
-                );
-              },
-              child: const Text('Voir la page de l\'événement'),
             ),
           ],
         ),

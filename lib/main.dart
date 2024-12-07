@@ -112,7 +112,7 @@ class _MyAppState extends State<MyApp> {
           backgroundColor: Colors.lightBlue,
         ),
         body: [
-          const EventPage(isAdmin: false,),
+          const EventPage(),
           const AddEventPage(),
           const MyAccountPage(),
           if (_admin!) const AdminPage(),
