@@ -34,15 +34,24 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   int _currentIndex = 0;
   int? _gemmes; // Ajout de la variable pour stocker les gemmes
+  double currentVersion =  5.1;
+  late final UpdateChecker updateChecker;
+  final navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   void initState() {
     super.initState();
-    _checkUserGems(); // Vérification des gemmes lors de l'initialisation
+    _checkUserDoc(); // Vérification des gemmes lors de l'initialisation
+    // Initialisation de UpdateChecker après l'initialisation de l'état
+    updateChecker = UpdateChecker(
+      githubUsername: 'alexazdzez',
+      repoName: 'nametickles',
+      currentVersion: currentVersion,
+    );
     updateChecker.checkForUpdates(navigatorKey);
   }
 
-  Future<void> _checkUserGems() async {
+  Future<void> _checkUserDoc() async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid != null) {
       final userDoc = await FirebaseFirestore.instance.collection('Utilisateurs').doc(uid).get();
@@ -50,8 +59,10 @@ class _MyAppState extends State<MyApp> {
         setState(() {
           _gemmes = userDoc['gemmes'] ?? 0; // Chargement des gemmes de l'utilisateur
         });
+        await FirebaseFirestore.instance.collection('Utilisateurs').doc(uid).update({'version' : currentVersion});
       } else {
         await FirebaseFirestore.instance.collection('Utilisateurs').doc(uid).set({'gemmes': 10}); // Création du document
+        await FirebaseFirestore.instance.collection('Utilisateurs').doc(uid).set({'version': currentVersion});
         setState(() {
           _gemmes = 10; // Attribuer 10 gemmes par défaut
         });
@@ -62,16 +73,9 @@ class _MyAppState extends State<MyApp> {
   void setCurrentIndex(int index) {
     setState(() {
       _currentIndex = index;
-      _checkUserGems();
+      _checkUserDoc();
     });
   }
-
-  final UpdateChecker updateChecker = UpdateChecker(
-    githubUsername: 'alexazdzez',
-    repoName: 'nametickles',
-    currentVersion: '5.1',
-  );
-  final navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context) {

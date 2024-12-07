@@ -7,7 +7,7 @@ import 'package:path_provider/path_provider.dart';
 class UpdateChecker {
   final String githubUsername;
   final String repoName;
-  final String currentVersion;
+  final double currentVersion;
 
   UpdateChecker({required this.githubUsername, required this.repoName, required this.currentVersion});
 
@@ -17,8 +17,8 @@ class UpdateChecker {
       final reponse = await http.get(url);
       if (reponse.statusCode == 200) {
         final remoteData = json.decode(reponse.body);
-        final latestVersion = remoteData['version'];
-        final isSnapshot = remoteData['snapshot'];
+        final latestVersion = double.tryParse(remoteData['version']) ?? 0.0;
+        final isSnapshot = remoteData['snapshot'] as bool;
 
         if (latestVersion != currentVersion) {
           if (isSnapshot) {
@@ -36,7 +36,7 @@ class UpdateChecker {
     }
   }
 
-  void _showUpdateDialog(GlobalKey<NavigatorState> navigatorKey, String latestVersion, String currentVersion) {
+  void _showUpdateDialog(GlobalKey<NavigatorState> navigatorKey, double latestVersion, double currentVersion) {
     final context = navigatorKey.currentContext;
     if (context == null) {
       print("Impossible d'afficher le dialogue de mise à jour : le contexte est null.");
@@ -56,7 +56,7 @@ class UpdateChecker {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              _downloadAndInstallUpdate(latestVersion);
+              _downloadAndInstallUpdate(latestVersion.toString());
             },
             child: Text("Mettre à jour"),
           ),
@@ -64,7 +64,7 @@ class UpdateChecker {
       ),
     );
   }
-  void _showSnapshotDialog(GlobalKey<NavigatorState> navigatorKey, String latestVersion, String currentVersion) {
+  void _showSnapshotDialog(GlobalKey<NavigatorState> navigatorKey, double latestVersion, double currentVersion) {
     final context = navigatorKey.currentContext;
     if (context == null) {
       print("Impossible d'afficher le dialogue de mise à jour : le contexte est null.");
@@ -87,7 +87,7 @@ class UpdateChecker {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              _downloadAndInstallUpdate(latestVersion);
+              _downloadAndInstallUpdate(latestVersion.toString());
             },
             child: Text("Mettre à jour sur une beta"),
           ),
