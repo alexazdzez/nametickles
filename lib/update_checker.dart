@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class UpdateChecker {
   final String githubUsername;
@@ -98,27 +99,9 @@ class UpdateChecker {
 
   Future<void> _downloadAndInstallUpdate(String latestVersion) async {
     final apkUrl = 'https://github.com/$githubUsername/$repoName/releases/download/V$latestVersion/app-release.apk';
-    final response = await http.get(Uri.parse(apkUrl));
-
-    if (response.statusCode == 200) {
-      final directory = await getExternalStorageDirectory();
-      final filePath = '${directory!.path}/app-release.apk';
-      final file = File(filePath);
-      await file.writeAsBytes(response.bodyBytes);
-      print("APK téléchargé avec succès à $filePath");
-
-      // Lancement de l'installation (uniquement possible sur Android)
-      if (Platform.isAndroid) {
-        await Process.run('pm', ['install', '-r', filePath]);
-        print("terminé");
-        exit(0);
-      }
-      else{
-        print("ah");
-      }
-    } else {
-      print(apkUrl);
-      print("Erreur lors du téléchargement de l'APK ${response.statusCode}");
+    final Uri url = Uri.parse(apkUrl);
+    if (!await launchUrl(url)) {
+      throw Exception('Could not launch $url');
     }
   }
 }
