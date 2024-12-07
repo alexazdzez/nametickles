@@ -3,8 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nametickles/blague_model.dart';
 
-import '../gemmes.dart';
-
 class MyAccountPage extends StatefulWidget {
   const MyAccountPage({super.key});
 
@@ -16,7 +14,6 @@ class _MyAccountState extends State<MyAccountPage> {
   List<Event> _events = [];
   bool _isLoading = true;
   int? _gemmes;
-  final GemmesManager _gemmesManager = GemmesManager();
 
   @override
   void initState() {

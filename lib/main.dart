@@ -89,7 +89,8 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    if (_admin == null) {
+    if (_admin == null || _gemmes == null) {
+      _checkUserDoc();
       return const MaterialApp(
         home: Scaffold(
           body: Center(
@@ -112,7 +113,7 @@ class _MyAppState extends State<MyApp> {
           backgroundColor: Colors.lightBlue,
         ),
         body: [
-          const EventPage(),
+          EventPage(isAdmin : _admin),
           const AddEventPage(),
           const MyAccountPage(),
           if (_admin!) const AdminPage(),
@@ -140,7 +141,7 @@ class _MyAppState extends State<MyApp> {
             ),
             if (_admin!)
               const BottomNavigationBarItem(
-                icon: Icon(Icons.lock_open),
+                icon: Icon(Icons.lock_outline),
                 label: "Admin",
               ),
           ],

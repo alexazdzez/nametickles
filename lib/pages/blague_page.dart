@@ -6,7 +6,9 @@ import 'package:nametickles/blague_model.dart';
 import '../gemmes.dart';
 
 class EventPage extends StatefulWidget {
-  const EventPage({super.key});
+  final bool? isAdmin; // Paramètre du constructeur
+
+  const EventPage({super.key, this.isAdmin}); // Passer la valeur dans le constructeur
 
   @override
   State<EventPage> createState() => _EventPageState();
@@ -16,6 +18,7 @@ class _EventPageState extends State<EventPage> {
   CollectionReference eventsRef = FirebaseFirestore.instance.collection("Events");
   final GemmesManager _gemmesManager = GemmesManager();
   bool _isUpdating = false; // Verrouillage pour éviter plusieurs clics simultanés
+  bool get _isAdmin => widget.isAdmin ?? false;
 
   Future<void> _retirerGemmes(int montant) async {
     if (_isUpdating) return; // Si déjà en cours, on ignore les clics supplémentaires
@@ -76,7 +79,7 @@ class _EventPageState extends State<EventPage> {
               label: const Text("Like"),
               icon: const Icon(Icons.thumb_up_rounded),
             ),
-            ElevatedButton.icon(
+            if(!_isAdmin)ElevatedButton.icon(
               onPressed: () async {
                 final FirebaseAuth auth = FirebaseAuth.instance;
                 final User? user = auth.currentUser;
@@ -94,6 +97,13 @@ class _EventPageState extends State<EventPage> {
                 }
               },
               label: const Text("Demander suppression"),
+              icon: const Icon(Icons.cancel_outlined),
+            ),
+            if(_isAdmin)ElevatedButton.icon(
+              onPressed: () async {
+                await eventsRef.doc(eventData.id).delete();
+              },
+              label: const Text("Supprimer(admin)"),
               icon: const Icon(Icons.cancel_outlined),
             ),
             const SizedBox(width: 20),
@@ -115,15 +125,16 @@ class _EventPageState extends State<EventPage> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text("Vous avez déjà mis un like"),
-          content: const SingleChildScrollView(
+          content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text("Relike : 12 gemmes"),
+                if(_isAdmin)const Text("Relike : gratuit"),
+                if(!_isAdmin)const Text("Relike: 12 gemmes")
               ],
             ),
           ),
           actions: <Widget>[
-            ElevatedButton.icon(
+            if(!_isAdmin)ElevatedButton.icon(
               onPressed: () async {
                 final FirebaseAuth auth = FirebaseAuth.instance;
                 final User? user = auth.currentUser;
@@ -140,6 +151,24 @@ class _EventPageState extends State<EventPage> {
                 Navigator.of(context).pop();
               },
               label: const Text("ReLike"),
+              icon: const Icon(Icons.thumb_up_rounded),
+            ),
+            if(_isAdmin)ElevatedButton.icon(
+              onPressed: () async {
+                final FirebaseAuth auth = FirebaseAuth.instance;
+                final User? user = auth.currentUser;
+                String? uid = user?.uid;
+
+                if (uid != null && !eventData.like.contains("${uid}2")){
+                  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+                  eventData.like.add("${uid}2");
+                  await _firestore.collection('Events').doc(eventData.id).update({
+                    'like': eventData.like,
+                  });
+                }
+                Navigator.of(context).pop();
+              },
+              label: const Text("ReLike(admin => gratuit)"),
               icon: const Icon(Icons.thumb_up_rounded),
             ),
             const SizedBox(width: 20),
