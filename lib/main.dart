@@ -34,7 +34,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   int _currentIndex = 0;
   int? _gemmes; // Ajout de la variable pour stocker les gemmes
-  double currentVersion =  5.1;
+  double currentVersion =  5.2;
   late final UpdateChecker updateChecker;
   final navigatorKey = GlobalKey<NavigatorState>();
 
