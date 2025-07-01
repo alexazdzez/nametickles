@@ -55,8 +55,7 @@ class _AddEventPageState extends State<AddEventPage> {
               const Text(
                   "Avant de créer votre blague:\n"
                       " - Regardez des blagues\n"
-                      " - Ne mettez pas:\n"
-                      "    - Une blague existante\n"
+                      " - Ne mettez pas une blague existante\n"
                       " - Un nom/prénom peut être réutilisé\n"
               ),
               TextFormField(
